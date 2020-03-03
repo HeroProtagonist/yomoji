@@ -63,31 +63,36 @@ app.post('/', async (req, res) => {
 
         if (!results) return
 
-        const { recipient, count } = results
+        const { recipients, count } = results
+
+        let allowedRecipients = recipients.filter(() => {        
+            try {
+                var { is_bot } = await User.findOrCreate(recipient)
+            } catch (e) {
+                console.log(`Error finding or creating user ${recipient}: `, e)
+                return false;
+            }
+    
+            return !(user === recipient || is_bot)
+        })
 
         try {
-            var { is_bot } = await User.findOrCreate(recipient)
+            var { given, remaining } = await giveTacos({ allowedRecipients, count, user })
         } catch (e) {
-            console.log(`Error finding or creating user ${recipient}: `, e)
-        }
-
-        if (user === recipient || is_bot) return
-
-        try {
-            var { given, remaining } = await giveTacos({ recipient, count, user })
-        } catch (e) {
-            console.log(`Error giving taco user ${{ recipient, count, user }}: `, e)
+            console.log(`Error giving tacos to ${{ allowedRecipients, count, user }}: `, e)
         }
 
         if (!given) {
+            const message = !remaining ? "You are out of tacos for today" : `Unable to give that many tacos. ${Remaining} left`
+
             return postMessage({
-                text: "You are out of tacos for today",
+                text: message,
                 channel: user
             }).catch(console.log)
         }
 
         return messageParticipants({
-            recipient,
+            allowedRecipients,
             remaining,
             given,
             user,

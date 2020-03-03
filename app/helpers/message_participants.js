@@ -7,7 +7,7 @@ const messageParticipants = (params) => {
     ])
 }
 
-const messageRecipient = ({ user, recipient, given }) => {
+const messageRecipient = ({ user, recipients, given }) => {
     const singularTacoMessages = [
         `<@${user}> told me to give you this:`,
     ];
@@ -38,10 +38,12 @@ const messageRecipient = ({ user, recipient, given }) => {
 
     const message = messagePool[Math.floor(Math.random() * messagePool.length)];
 
-    return postMessage({
-        text: message + ' ' + countTacos(given),
-        channel: recipient
-    })
+    return recipients.map(recipient => ( 
+        postMessage({
+            text: message + ' ' + countTacos(given),
+            channel: recipient
+        })
+    ))
 }
 
 const messageUser = ({ user, recipient, given, remaining }) => {
