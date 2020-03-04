@@ -11,7 +11,7 @@ const parseBlocks = ([ blocks ]) => {
         const { type, user_id, name } = curr
 
         if (type === 'user') {
-            recipient.add(user_id)
+            recipients.add(user_id)
         } else if (type === 'emoji' && name === 'taco') {
             memo.emoji = ++memo.emoji || 1
         }

@@ -38,18 +38,25 @@ const messageRecipient = ({ user, recipients, given }) => {
 
     const message = messagePool[Math.floor(Math.random() * messagePool.length)];
 
-    return recipients.map(recipient => ( 
-        postMessage({
+    return recipients.map(async recipient => {
+        await postMessage({
             text: message + ' ' + countTacos(given),
             channel: recipient
         })
-    ))
+    })
 }
 
-const messageUser = ({ user, recipient, given, remaining }) => {
+const messageUser = ({ user, recipients, given, remaining }) => {
+    const users = recipients.map(recipient => {
+        return `<@${recipient}>`
+    }).join(", ")
+
+
+    const message = `You gave ${given} tacos to ${users}. ${countTacos(given * recipients.length)}\n` +
+    `You have ${remaining} left today.`
+
     return postMessage({
-        text: `You gave <@${recipient}> ${given} tacos. ${countTacos(given)}\n` +
-            `You have ${remaining} left today.`,
+        text: message,
         channel: user
     })
 }

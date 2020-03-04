@@ -65,7 +65,7 @@ app.post('/', async (req, res) => {
 
         const { recipients, count } = results
 
-        let allowedRecipients = recipients.filter(() => {        
+        let allowedRecipients = [...recipients].filter(async (recipient) => {        
             try {
                 var { is_bot } = await User.findOrCreate(recipient)
             } catch (e) {
@@ -77,7 +77,7 @@ app.post('/', async (req, res) => {
         })
 
         try {
-            var { given, remaining } = await giveTacos({ allowedRecipients, count, user })
+            var { given, remaining } = await giveTacos({ recipients: allowedRecipients, count, user })
         } catch (e) {
             console.log(`Error giving tacos to ${{ allowedRecipients, count, user }}: `, e)
         }
@@ -92,7 +92,7 @@ app.post('/', async (req, res) => {
         }
 
         return messageParticipants({
-            allowedRecipients,
+            recipients: allowedRecipients,
             remaining,
             given,
             user,
