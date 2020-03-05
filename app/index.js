@@ -58,6 +58,7 @@ app.post('/', async (req, res) => {
         const { user } = event
 
         if (!event.text.includes(':taco:')) return
+        if (event.blocks === undefined) return
 
         const results = parseBlocks(event.blocks)
 

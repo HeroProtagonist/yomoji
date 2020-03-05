@@ -51,8 +51,9 @@ const messageUser = ({ user, recipients, given, remaining }) => {
         return `<@${recipient}>`
     }).join(", ")
 
+    const each = recipients.length > 1 ? 'each ' : ''
 
-    const message = `You gave ${given} tacos to ${users}. ${countTacos(given * recipients.length)}\n` +
+    const message = `You're shellin' em out! ${given} tacos ${each}to ${users}. ${countTacos(given * recipients.length)}\n` +
     `You have ${remaining} left today.`
 
     return postMessage({
