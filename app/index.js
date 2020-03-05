@@ -76,6 +76,8 @@ app.post('/', async (req, res) => {
             return !(user === recipient || is_bot)
         })
 
+        if (!allowedRecipients.length) return
+
         try {
             var { given, remaining } = await giveTacos({ recipients: allowedRecipients, count, user })
         } catch (e) {

@@ -19,6 +19,7 @@ const parseBlocks = ([ blocks ]) => {
         return memo
     }, {})
 
+    if (!recipients.size) return null
     return {
         recipients,
         count: blockObj.emoji
