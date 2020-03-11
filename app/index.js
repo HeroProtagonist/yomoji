@@ -58,36 +58,44 @@ app.post('/', async (req, res) => {
         const { user } = event
 
         if (!event.text.includes(':taco:')) return
+        if (event.blocks === undefined) return
 
         const results = parseBlocks(event.blocks)
 
         if (!results) return
 
-        const { recipient, count } = results
+        const { recipients, count } = results
+
+        let allowedRecipients = [...recipients].filter(async (recipient) => {        
+            try {
+                var { is_bot } = await User.findOrCreate(recipient)
+            } catch (e) {
+                console.log(`Error finding or creating user ${recipient}: `, e)
+                return false;
+            }
+    
+            return !(user === recipient || is_bot)
+        })
+
+        if (!allowedRecipients.length) return
 
         try {
-            var { is_bot } = await User.findOrCreate(recipient)
+            var { given, remaining } = await giveTacos({ recipients: allowedRecipients, count, user })
         } catch (e) {
-            console.log(`Error finding or creating user ${recipient}: `, e)
-        }
-
-        if (user === recipient || is_bot) return
-
-        try {
-            var { given, remaining } = await giveTacos({ recipient, count, user })
-        } catch (e) {
-            console.log(`Error giving taco user ${{ recipient, count, user }}: `, e)
+            console.log(`Error giving tacos to ${{ allowedRecipients, count, user }}: `, e)
         }
 
         if (!given) {
+            const message = !remaining ? "You are out of tacos for today" : `Unable to give that many tacos. ${remaining} left`
+
             return postMessage({
-                text: "You are out of tacos for today",
+                text: message,
                 channel: user
             }).catch(console.log)
         }
 
         return messageParticipants({
-            recipient,
+            recipients: allowedRecipients,
             remaining,
             given,
             user,

@@ -5,14 +5,13 @@ const parseBlocks = ([ blocks ]) => {
     }
 
     const { elements } = nextblocks
-    let recipient
+    let recipients = new Set()
 
     const blockObj = elements.reduce((memo, curr) => {
         const { type, user_id, name } = curr
 
         if (type === 'user') {
-            memo.user = ++memo.user || 1
-            recipient = user_id
+            recipients.add(user_id)
         } else if (type === 'emoji' && name === 'taco') {
             memo.emoji = ++memo.emoji || 1
         }
@@ -20,11 +19,9 @@ const parseBlocks = ([ blocks ]) => {
         return memo
     }, {})
 
-    // Can only give tacos to one user in a message
-    if (blockObj.user !== 1) return null
-
+    if (!recipients.size) return null
     return {
-        recipient,
+        recipients,
         count: blockObj.emoji
     }
 }

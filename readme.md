@@ -67,6 +67,9 @@ In order for Yomoji to work, enable the following:
  
  im:write
  Start direct messages with people
+
+ users:read
+ Read info about a user
 ```
 
 #### User Token Scopes
