@@ -86,7 +86,7 @@ app.post('/', async (req, res) => {
         }
 
         if (!given) {
-            const message = !remaining ? "You are out of tacos for today" : `Unable to give that many tacos. ${Remaining} left`
+            const message = !remaining ? "You are out of tacos for today" : `Unable to give that many tacos. ${remaining} left`
 
             return postMessage({
                 text: message,
