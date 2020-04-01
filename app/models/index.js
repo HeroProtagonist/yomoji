@@ -8,7 +8,7 @@ const User = require('./user')(knex)
 const Event = require('./event')(knex)
 
 const UserEvent = {
-  async create({ to, from, type }) {
+  async create({ to, from, type, amount }) {
     // todo: transaction
     const { id: to_id } = await User.findOrCreate(to)
     const { id: from_id } = await User.findOrCreate(from)
@@ -18,6 +18,7 @@ const UserEvent = {
       from_id,
       to_id,
       event_id,
+      amount,
     })
     return userEvent
   },
