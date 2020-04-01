@@ -15,19 +15,17 @@ const giveTacos = async ({ count, recipients, user }) => {
     // Allows truncation if I've given too many away
 
     const allowedCount = Math.min(limit, count)
-    const allowedArray = [...Array(allowedCount).keys()]
-    const totalGiven = recipients.length * count
+    const totalGiven = recipients.length * allowedCount
 
     const userEventPromises = recipients.map(recipient => {
-        allowedArray.map(_ => (
-            UserEvent.create({
-                to: recipient,
-                from: user,
-                type: 'taco'
-            })
-        ))
+        return UserEvent.create({
+            to: recipient,
+            from: user,
+            type: 'taco',
+            amount: allowedCount,
+        })
     })
-    
+
     await Promise.all(userEventPromises)
     await User.decrement(user, totalGiven)
 
