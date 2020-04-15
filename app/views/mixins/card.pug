@@ -1,4 +1,4 @@
-mixin card(realName, displayName, profileImage, title)
+mixin card(realName, displayName, profileImage, title, total, index)
     <div class="card mb-3" style="max-width: 540px;">
     <div class="row no-gutters">
         <div class="col-md-4">
@@ -6,7 +6,8 @@ mixin card(realName, displayName, profileImage, title)
         </div>
         <div class="col-md-8">
         <div class="card-body">
-            h4.card-title= displayName
+            h1.card-title ##{index + 1} #{displayName}
+            h4.card-title #{total} 🌮
                 h6= realName
             p.card-text
                 small.text-muted= title

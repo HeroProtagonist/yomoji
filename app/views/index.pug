@@ -10,15 +10,19 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1")
     title Yomoji Leaderboard
   body
-    h1 Yomoji Leaderboard
-
-    ul
-        each val in users
-            +card(val.realName, val.displayName, val.profileImage, val.title)
-
-    script(src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js")
-
-    script.
-        console.log('hi')
+    h1 BETA Yomoji Leaderboard
 
 
+    .container
+      .row
+        .col
+          h3 Top Recievers
+          ul
+            each val, index in recipients
+                +card(val.realName, val.displayName, val.profileImage, val.title, val.total, index)
+
+        .col
+          h3 Top Givers
+          ul
+            each val, index in givers
+                +card(val.realName, val.displayName, val.profileImage, val.title, val.total, index)
