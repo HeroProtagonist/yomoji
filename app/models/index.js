@@ -1,4 +1,3 @@
-const { orderBy } = require('lodash')
 const config = require('../../knexfile')
 
 const ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
@@ -22,19 +21,18 @@ const UserEvent = {
     })
     return userEvent
   },
-  async getLeaders() {
-    const users = await knex('user').select()
+  async getLeaders(type) {
+    if (type !== 'recipients' && type !== 'givers') return []
 
-    // use promisify.all
-    const userCounts = []
-    for (const user of users) {
-      const count  = await knex('user_event').where({ to_id: user.id }).count().first()
-      userCounts.push({ ...user, ...count })
-    }
+    const column = type === 'recipients' ? 'to_id' : 'from_id'
 
-    return orderBy(userCounts, 'count', 'desc')
-  }
+    const { rows } = await knex.raw(`SELECT u.user_name, sums.sum from "user" as u
+    join (SELECT SUM(user_event.amount), user_event.${column} from user_event GROUP BY user_event.${column}) as sums
+    on sums.${column}=u.id ORDER BY sum DESC;
+    `)
 
+    return rows
+  },
 }
 
 module.exports = UserEvent;

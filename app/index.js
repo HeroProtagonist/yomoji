@@ -4,9 +4,11 @@ const morgan = require('morgan')
 const UserEvent = require('./models')
 const { postMessage } = require('./slack')
 
+const leaderboard = require('./www')
+const authMiddleware = require('./www/auth_middleware')
+
 const {
     giveTacos,
-    createLeaderboard,
     parseBlocks,
     messageParticipants,
 } = require('./helpers')
@@ -17,8 +19,16 @@ const app = express()
 
 const logger = process.env.NODE_ENV === 'production' ? 'tiny' : 'dev'
 app.use(morgan(logger))
-
+app.set('view engine', 'pug')
+app.set('views', __dirname + '/views')
 app.use(bodyParser.json())
+//  cors, helmet
+
+app.get('/', authMiddleware, leaderboard)
+
+app.get('/slack/auth/redirect', (req, res) => {
+    console.log(req, res)
+})
 
 app.post('/', async (req, res) => {
     const { challenge, event } = req.body
@@ -37,7 +47,7 @@ app.post('/', async (req, res) => {
 
         if (event.text.includes('leaderboard')) {
             try {
-                botMessage = 'TODO: PRs welcome - https://github.com/HeroProtagonist/yomoji' //await createLeaderboard()
+                botMessage = 'Beta: https://irpk1dc083.execute-api.us-east-1.amazonaws.com/prod?secret=112358'
             } catch (e) {
                 console.log('Error creating leaderboard: ', e)
             }
@@ -66,14 +76,14 @@ app.post('/', async (req, res) => {
 
         const { recipients, count } = results
 
-        let allowedRecipients = [...recipients].filter(async (recipient) => {        
+        let allowedRecipients = [...recipients].filter(async (recipient) => {
             try {
                 var { is_bot } = await User.findOrCreate(recipient)
             } catch (e) {
                 console.log(`Error finding or creating user ${recipient}: `, e)
                 return false;
             }
-    
+
             return !(user === recipient || is_bot)
         })
 
