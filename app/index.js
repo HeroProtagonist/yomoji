@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const UserEvent = require('./models')
 const { postMessage } = require('./slack')
+const fetch = require('node-fetch')
 
 const {
     giveType,
@@ -12,7 +13,7 @@ const {
     findEventType,
 } = require('./helpers')
 
-const { User } = UserEvent
+const { User, Event } = UserEvent
 
 const app = express()
 
@@ -103,6 +104,51 @@ app.post('/', async (req, res) => {
             user,
         }).catch(console.log)
     }
+})
+
+// slash commands
+app.use(bodyParser.urlencoded({ extended: true }))
+app.post('/add_emoji', async (req, res) => {
+    const { text, user_id } = req.body
+    const firstEmojiMatch = text.match(/:(?<emojiType>[^\s]+):/)
+    const initialReply = firstEmojiMatch ? 'Working on it..' : 'No emoji sent'
+
+    res.send(initialReply)
+
+    if (!firstEmojiMatch) return
+    const { groups: { emojiType } } = firstEmojiMatch
+
+    await Event.findOrCreate(emojiType, user_id)
+
+    const message = {
+        text: `Created entry for :${emojiType}:`
+    }
+
+    return fetch(req.body.response_url, {
+        method: 'post',
+        body: JSON.stringify(message),
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+        },
+    })
+})
+
+app.post('/list_emojis', async (req, res) => {
+    res.send('Working on it..')
+
+    const allTypes = await Event.allTypes()
+    const typeArray = allTypes.map(t => `:${t.type}:`)
+    const message = {
+        text: `Here you go: \n I can send these emojis: ${typeArray}`
+    }
+
+    return fetch(req.body.response_url, {
+        method: 'post',
+        body: JSON.stringify(message),
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+        },
+    })
 })
 
 module.exports = app
