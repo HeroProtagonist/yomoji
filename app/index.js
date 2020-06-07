@@ -5,10 +5,11 @@ const UserEvent = require('./models')
 const { postMessage } = require('./slack')
 
 const {
-    giveTacos,
+    giveType,
     createLeaderboard,
     parseBlocks,
     messageParticipants,
+    findEventType,
 } = require('./helpers')
 
 const { User } = UserEvent
@@ -57,32 +58,33 @@ app.post('/', async (req, res) => {
         // if edit, previous message event.message
         const { user } = event
 
-        if (!event.text.includes(':taco:')) return
+        const matchedEventType = await findEventType(event.text)
+        if (!matchedEventType) return
         if (event.blocks === undefined) return
 
-        const results = parseBlocks(event.blocks)
+        const results = parseBlocks(event.blocks, matchedEventType)
 
         if (!results) return
 
         const { recipients, count } = results
 
-        let allowedRecipients = [...recipients].filter(async (recipient) => {        
+        let allowedRecipients = [...recipients].filter(async (recipient) => {
             try {
                 var { is_bot } = await User.findOrCreate(recipient)
             } catch (e) {
                 console.log(`Error finding or creating user ${recipient}: `, e)
                 return false;
             }
-    
+
             return !(user === recipient || is_bot)
         })
 
         if (!allowedRecipients.length) return
 
         try {
-            var { given, remaining } = await giveTacos({ recipients: allowedRecipients, count, user })
+            var { given, remaining } = await giveType({ recipients: allowedRecipients, count, user, type: matchedEventType.type })
         } catch (e) {
-            console.log(`Error giving tacos to ${{ allowedRecipients, count, user }}: `, e)
+            console.log(`Error giving tacos to ${JSON.stringify({ allowedRecipients, count, user, type: matchedEventType.type })}: `, e)
         }
 
         if (!given) {

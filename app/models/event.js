@@ -8,6 +8,11 @@ const Event = knex => ({
     }
     return event
   },
+  async allTypes() {
+   const allTypes = await knex.select('id', 'type').from('event')
+
+    return allTypes
+  },
 })
 
 module.exports = Event;
