@@ -1,7 +1,7 @@
 const UserEvent = require('../models')
 const { User } = UserEvent
 
-const giveTacos = async ({ count, recipients, user }) => {
+const giveType = async ({ count, recipients, user, type }) => {
     // TODO Wrap this in a transaction
     const limit = await User.getLimit(user)
 
@@ -21,7 +21,7 @@ const giveTacos = async ({ count, recipients, user }) => {
         return UserEvent.create({
             to: recipient,
             from: user,
-            type: 'taco',
+            type,
             amount: allowedCount,
         })
     })
@@ -37,4 +37,4 @@ const giveTacos = async ({ count, recipients, user }) => {
     }
 }
 
-module.exports = giveTacos
+module.exports = giveType

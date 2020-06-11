@@ -1,4 +1,4 @@
-const parseBlocks = ([ blocks ]) => {
+const parseBlocks = ([ blocks ], matchedEventType) => {
     let nextblocks = blocks
     while (nextblocks.type !== 'rich_text_section') {
         nextblocks = nextblocks.elements[0]
@@ -12,7 +12,7 @@ const parseBlocks = ([ blocks ]) => {
 
         if (type === 'user') {
             recipients.add(user_id)
-        } else if (type === 'emoji' && name === 'taco') {
+        } else if (type === 'emoji' && name === matchedEventType.type) {
             memo.emoji = ++memo.emoji || 1
         }
 

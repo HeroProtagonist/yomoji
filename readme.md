@@ -52,19 +52,19 @@ In order for Yomoji to work, enable the following:
 ```
  app_mentions:read
  View messages that directly mention @yomoji_test in conversations that the app is in
- 
+
  channels:history
  View messages and other content in public channels that Yomoji Test has been added to
- 
+
  chat:write
  Send messages as @yomoji_test
- 
+
  groups:history
  View messages and other content in private channels that Yomoji Test has been added to
- 
+
  im:history
  View messages and other content in direct messages that Yomoji Test has been added to
- 
+
  im:write
  Start direct messages with people
 
@@ -77,7 +77,7 @@ In order for Yomoji to work, enable the following:
  identify
  View information about the user’s identity
 ```
- 
+
 
 ### Event Subscriptions
 Go to the **Event Subscriptions** section to determine when Yomoji bot should be invoked.
@@ -104,3 +104,13 @@ Send a message to your bot once they are in the channel!
 > You: @Yomoji whaddup
 >
 > Yomoji: I am a bot
+
+### Slash commands
+
+Add slash commands into slack app.
+
+Supported commands are:
+
+`/add_emoji`
+
+`/list_emojis`
