@@ -37,7 +37,7 @@ app.post('/', async (req, res) => {
     if (event.type === 'app_mention' && event.subtype !== 'bot_message') {
         let botMessage = 'I am a bot'
 
-        if (event.text.includes('leaderboard')) {
+        if (event.text && event.text.includes('leaderboard')) {
             try {
                 botMessage = 'TODO: PRs welcome - https://github.com/HeroProtagonist/yomoji' //await createLeaderboard()
             } catch (e) {
@@ -58,6 +58,12 @@ app.post('/', async (req, res) => {
     if (event.type === 'message' && event.subtype !== 'bot_message') {
         // if edit, previous message event.message
         const { user } = event
+
+        if (!event.text) {
+            console.log('*****')
+            console.log('No event text: ', JSON.stringify({ event }), Date.now())
+            console.log('*****')
+        }
 
         const matchedEventType = await findEventType(event.text)
         if (!matchedEventType) return
