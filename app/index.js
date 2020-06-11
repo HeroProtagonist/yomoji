@@ -85,11 +85,11 @@ app.post('/', async (req, res) => {
         try {
             var { given, remaining } = await giveType({ recipients: allowedRecipients, count, user, type: matchedEventType.type })
         } catch (e) {
-            console.log(`Error giving tacos to ${JSON.stringify({ allowedRecipients, count, user, type: matchedEventType.type })}: `, e)
+            console.log(`Error giving emoji ${JSON.stringify({ allowedRecipients, count, user, type: matchedEventType.type })}: `, e)
         }
 
         if (!given) {
-            const message = !remaining ? "You are out of tacos for today" : `Unable to give that many tacos. ${remaining} left`
+            const message = !remaining ? "You are out of emojis for today" : `Unable to give that many emojis. ${remaining} left`
 
             return postMessage({
                 text: message,
@@ -118,10 +118,10 @@ app.post('/add_emoji', async (req, res) => {
     if (!firstEmojiMatch) return
     const { groups: { emojiType } } = firstEmojiMatch
 
-    await Event.findOrCreate(emojiType, user_id)
+    const { _new_entry } = await Event.findOrCreate(emojiType, user_id)
 
     const message = {
-        text: `Created entry for :${emojiType}:`
+        text: _new_entry ? `Created entry for :${emojiType}:` : `:${emojiType}: Already exists!`
     }
 
     return fetch(req.body.response_url, {

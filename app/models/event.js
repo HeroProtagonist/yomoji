@@ -6,6 +6,7 @@ const Event = knex => ({
     if (!event) {
       eventObject = { type, created_by: userId }
       ;[ event ] = await knex('event').insert(eventObject, ['id'])
+      event = { ...event, _new_entry: true }
     }
     return event
   },
