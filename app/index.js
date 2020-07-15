@@ -55,16 +55,11 @@ app.post('/', async (req, res) => {
         }).catch(console.log)
     }
 
-    if (event.type === 'message' && event.subtype !== 'bot_message') {
+    const ignoredEventSubTypes = ['bot_message', 'message_changed', 'message_deleted']
+
+    if (event.type === 'message' && !ignoredEventSubTypes.includes(event.subtype)) {
         // if edit, previous message event.message
         const { user } = event
-
-        if (!event.text) {
-            console.log('*****')
-            console.log('No event text: ', JSON.stringify({ event }), Date.now())
-            console.log('*****')
-        }
-
         const matchedEventType = await findEventType(event.text)
         if (!matchedEventType) return
         if (event.blocks === undefined) return
@@ -108,6 +103,7 @@ app.post('/', async (req, res) => {
             remaining,
             given,
             user,
+            type: matchedEventType.type,
         }).catch(console.log)
     }
 })

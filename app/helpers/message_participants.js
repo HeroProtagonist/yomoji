@@ -7,7 +7,7 @@ const messageParticipants = (params) => {
     ])
 }
 
-const messageRecipient = ({ user, recipients, given }) => {
+const messageRecipient = ({ user, recipients, given, type }) => {
     const singularTacoMessages = [
         `<@${user}> told me to give you this:`,
     ];
@@ -40,20 +40,20 @@ const messageRecipient = ({ user, recipients, given }) => {
 
     return recipients.map(async recipient => {
         await postMessage({
-            text: message + ' ' + countTacos(given),
+            text: message + ' ' + countTacos(type, given),
             channel: recipient
         })
     })
 }
 
-const messageUser = ({ user, recipients, given, remaining }) => {
+const messageUser = ({ user, recipients, given, remaining, type }) => {
     const users = recipients.map(recipient => {
         return `<@${recipient}>`
     }).join(", ")
 
     const each = recipients.length > 1 ? 'each ' : ''
 
-    const message = `You're shellin' em out! ${given} tacos ${each}to ${users}. ${countTacos(given * recipients.length)}\n` +
+    const message = `You're shellin' em out! ${given} ${type} ${each}to ${users}. ${countTacos(type, given * recipients.length)}\n` +
     `You have ${remaining} left today.`
 
     return postMessage({
@@ -62,10 +62,10 @@ const messageUser = ({ user, recipients, given, remaining }) => {
     })
 }
 
-const countTacos = count => {
+const countTacos = (type, count) => {
     const tacos = [];
     for (let i = 0; i < count; i++) {
-        tacos.push(':taco:');
+        tacos.push(`:${type}:`);
     }
     return tacos.join(' ');
 }
