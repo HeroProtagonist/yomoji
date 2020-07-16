@@ -40,7 +40,7 @@ const messageRecipient = ({ user, recipients, given, type }) => {
 
     return recipients.map(async recipient => {
         await postMessage({
-            text: message + ' ' + countTacos(type, given),
+            text: message + ' ' + countEmojis(type, given),
             channel: recipient
         })
     })
@@ -53,7 +53,7 @@ const messageUser = ({ user, recipients, given, remaining, type }) => {
 
     const each = recipients.length > 1 ? 'each ' : ''
 
-    const message = `You're shellin' em out! ${given} ${type} ${each}to ${users}. ${countTacos(type, given * recipients.length)}\n` +
+    const message = `You're shellin' em out! ${given} ${type} ${each}to ${users}. ${countEmojis(type, given * recipients.length)}\n` +
     `You have ${remaining} left today.`
 
     return postMessage({
@@ -62,12 +62,12 @@ const messageUser = ({ user, recipients, given, remaining, type }) => {
     })
 }
 
-const countTacos = (type, count) => {
-    const tacos = [];
+const countEmojis = (type, count) => {
+    const emojis = [];
     for (let i = 0; i < count; i++) {
-        tacos.push(`:${type}:`);
+        emojis.push(`:${type}:`);
     }
-    return tacos.join(' ');
+    return emojis.join(' ');
 }
 
 module.exports = messageParticipants
